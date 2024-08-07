@@ -62,6 +62,17 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         this.havePermission =
             (requestCode == PERMISSIONS_REQUEST_CODE) && (resultCode == Activity.RESULT_OK)
+        if (havePermission) {
+            // İzin onaylanır onaylanmaz bağlantıyı başlatmak için bu callback kullanılır
+            scope.launch(Dispatchers.IO) {
+                val wgQuickConfig = lastWgQuickConfig
+                if (wgQuickConfig != null) {
+                    connect(wgQuickConfig, lastResult!!)
+                }
+            }
+        } else {
+            lastResult?.error("PERMISSION_DENIED", "Permission denied by user", null)
+        }
         return havePermission
     }
 
