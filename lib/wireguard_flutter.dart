@@ -52,6 +52,9 @@ class WireGuardFlutter extends WireGuardFlutterInterface {
   }
 
   @override
+  Future<bool> checkPermission() => _instance.checkPermission();
+
+  @override
   Future<void> stopVpn() => _instance.stopVpn();
 
   @override
