@@ -162,7 +162,7 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             }
             "checkPermission" -> {
                 checkPermission()
-                result.success(null)
+                result.success(havePermission)
             }
             else -> flutterNotImplemented(result)
         }
