@@ -43,6 +43,12 @@ class WireGuardFlutterMethodChannel extends WireGuardFlutterInterface {
   }
 
   @override
+  Future<bool> checkPermission() async {
+    final bool result = await _methodChannel.invokeMethod('checkPermission');
+    return result;
+  }
+
+  @override
   Future<void> stopVpn() => _methodChannel.invokeMethod('stop');
 
   @override

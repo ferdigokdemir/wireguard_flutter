@@ -11,6 +11,8 @@ abstract class WireGuardFlutterInterface {
 
   Future<void> stopVpn();
 
+  Future<bool> checkPermission();
+
   Future<void> refreshStage();
   Future<VpnStage> stage();
   Future<bool> isConnected() =>

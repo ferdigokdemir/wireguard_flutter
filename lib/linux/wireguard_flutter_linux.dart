@@ -86,6 +86,11 @@ class WireGuardFlutterLinux extends WireGuardFlutterInterface {
   }
 
   @override
+  Future<bool> checkPermission() async {
+    return true;
+  }
+
+  @override
   Future<VpnStage> stage() async => _stage;
 
   @override
