@@ -1,5 +1,6 @@
 package billion.group.wireguard_flutter
 
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -24,6 +25,7 @@ import com.wireguard.crypto.KeyPair
 import io.flutter.plugin.common.EventChannel
 import kotlinx.coroutines.*
 import java.util.*
+
 
 import kotlinx.coroutines.launch
 import java.io.ByteArrayInputStream
@@ -50,7 +52,6 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
     private var tunnel: WireGuardTunnel? = null
     private val TAG = "NVPN"
     var isVpnChecked = false
-
     companion object {
         private var state: String = "no_connection"
 
@@ -58,21 +59,9 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             return state
         }
     }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?): Boolean {
         this.havePermission =
             (requestCode == PERMISSIONS_REQUEST_CODE) && (resultCode == Activity.RESULT_OK)
-        if (havePermission) {
-            // İzin onaylanır onaylanmaz bağlantıyı başlatmak için bu callback kullanılır
-            scope.launch(Dispatchers.IO) {
-                val wgQuickConfig = lastWgQuickConfig
-                if (wgQuickConfig != null) {
-                    connect(wgQuickConfig, lastResult!!)
-                }
-            }
-        } else {
-            lastResult?.error("PERMISSION_DENIED", "Permission denied by user", null)
-        }
         return havePermission
     }
 
@@ -118,6 +107,7 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
                 vpnStageSink = null
             }
         })
+
     }
 
     private fun createBackend(): Backend {
@@ -145,21 +135,12 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
         }
     }
 
-    private var lastWgQuickConfig: String? = null
-    private var lastResult: Result? = null
-
     override fun onMethodCall(call: MethodCall, result: Result) {
+
         when (call.method) {
             "initialize" -> setupTunnel(call.argument<String>("localizedDescription").toString(), result)
             "start" -> {
-                lastWgQuickConfig = call.argument<String>("wgQuickConfig")
-                lastResult = result
-
-                if (!havePermission) {
-                    checkPermission()
-                } else {
-                    connect(lastWgQuickConfig!!, result)
-                }
+                connect(call.argument<String>("wgQuickConfig").toString(), result)
 
                 if (!isVpnChecked) {
                     if (isVpnActive()) {
@@ -186,7 +167,6 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             else -> flutterNotImplemented(result)
         }
     }
-
     private fun isVpnActive(): Boolean {
         try {
             val connectivityManager =
@@ -204,7 +184,6 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             return false
         }
     }
-
     private fun updateStage(stage: String?) {
         scope.launch(Dispatchers.Main) {
             val updatedStage = stage ?: "no_connection"
@@ -212,7 +191,6 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             vpnStageSink?.success(updatedStage.lowercase(Locale.ROOT))
         }
     }
-
     private fun updateStageFromState(state: Tunnel.State) {
         scope.launch(Dispatchers.Main) {
             when (state) {
@@ -222,7 +200,6 @@ class WireguardFlutterPlugin : FlutterPlugin, MethodCallHandler, ActivityAware,
             }
         }
     }
-
     private fun disconnect(result: Result) {
         scope.launch(Dispatchers.IO) {
             try {
@@ -331,3 +308,4 @@ class WireGuardTunnel(
     }
 
 }
+
